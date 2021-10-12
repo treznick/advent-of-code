@@ -8,12 +8,37 @@ import (
 	"strconv"
 )
 
-func getMass(m int64) int64 {
-	return int64(math.Floor(float64(m)/3)) - 2
+func getMass(m int32) int32 {
+	return int32(math.Max((math.Floor(float64(m)/3) - 2), float64(0)))
+}
+
+type module struct {
+	mass     int32
+	fuelMass int32
+}
+
+func (m *module) totalMass() int32 {
+	return m.mass + m.fuelMass
+}
+
+func newModule(m int32) *module {
+	p := module{mass: m, fuelMass: calculateFuelMass(m)}
+	return &p
+}
+
+func calculateFuelMass(m int32) int32 {
+	i := m
+	agg := int32(0)
+	for getMass(i) > 0 {
+		i = getMass(i)
+		agg += i
+	}
+
+	return agg
 }
 
 func main() {
-	sum := int64(0)
+	sum := int32(0)
 	file, err := os.Open("./input.txt")
 	if err != nil {
 		panic(err)
@@ -24,13 +49,14 @@ func main() {
 	scanner := bufio.NewScanner(file)
 
 	for scanner.Scan() {
-		i, err := strconv.ParseInt(scanner.Text(), 10, 64)
+		i, err := strconv.ParseInt(scanner.Text(), 10, 32)
 
 		if err != nil {
 			panic(err)
 		}
 
-		sum += getMass(i)
+		m := newModule(int32(i))
+		sum += m.fuelMass
 	}
 
 	fmt.Println(sum)

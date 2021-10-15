@@ -38,10 +38,10 @@ func runIntCode(program *[]int64, operation []int64) {
 	}
 }
 
-func repairProgram(input string) string {
+func repairProgram(input string, noun int64, verb int64) string {
 	arr := strings.Split(input, ",")
-	arr[1] = "12"
-	arr[2] = "2"
+	arr[1] = strconv.FormatInt(noun, 10)
+	arr[2] = strconv.FormatInt(verb, 10)
 	return strings.Join(arr, ",")
 }
 
@@ -71,18 +71,29 @@ func toIntegerSlice(input string) []int64 {
 	return newSlice
 }
 
-func main() {
+func loadProgram(path string) string {
 	contents, err := os.ReadFile("./input.txt")
 	if err != nil {
 		panic(err)
 	}
 
-	s := string(contents)
+	return string(contents)
+}
 
-	repaired := repairProgram(s)
+func main() {
+	path := "./input.txt"
 
-	output := runProgram(repaired)
+out:
+	for noun := 0; noun < 100; noun++ {
+		for verb := 0; verb < 100; verb++ {
+			s := loadProgram(path)
 
-	fmt.Println(fromIntegerSlice(output))
-	fmt.Println(output[0])
+			repaired := repairProgram(s, int64(noun), int64(verb))
+			output := runProgram(repaired)
+			if output[0] == 19690720 {
+				fmt.Println("the answer is", 100*noun+verb)
+				break out
+			}
+		}
+	}
 }

@@ -28,13 +28,16 @@ func TestRunProgram(t *testing.T) {
 func TestRepairProgram(t *testing.T) {
 	tables := []struct {
 		input    string
+		noun     int64
+		verb     int64
 		expected string
 	}{
-		{"1,0,0,0,99", "1,12,2,0,99"},
+		{"1,0,0,0,99", 12, 2, "1,12,2,0,99"},
+		{"1,0,0,0,99", 1, 2, "1,1,2,0,99"},
 	}
 
 	for _, table := range tables {
-		output := repairProgram(table.input)
+		output := repairProgram(table.input, table.noun, table.verb)
 		if output != table.expected {
 			t.Errorf("expeted '%s' but got '%s'", table.expected, output)
 		}
